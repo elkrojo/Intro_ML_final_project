@@ -1,0 +1,66 @@
+---
+title: "Intro_ML_final_project by Ronan Casey"
+output: html_document
+---
+
+>Question 1:
+>Summarize for us the goal of this project...    
+
+  The goal of the project is to provide a means of identifying persons of interest (POIs) in the Enron dataset with a precision score and recall score greater than 0.3. Machine learning is useful for this task as the associated algorithms are specialised for identifying relationships in data using multivariate analysis. The Enron dataset is compiled from publicly released documents following a federal trial in which the company leaders were accused misleading investors and conducting business in a fraudulent manner.   
+The dataset of 146 entries is comprised of three types of data for each employee at the company. The first type of data is numerical financial data which are broken down into individual features (eg. salary, bonus, exercised stock options, etc.) The second type of data is word based email data which include header contents as well as the main contents. The third type of data is binary and denotes POIs as identified manually by Udacity instructor Katie Malone.    
+
+The financial data is crucial to this project, as POIs are those employees who have taken advantage of their position in the company to benefit unfairly. Using a combination of the individual financial features to train an algorithm will help us identify POIs among the employees. The email data is also useful for this project, as the header data provides valuable information about the frequency of emails received from POIs for each employee as well as sent to POIs for each employee.   
+
+An initial plotting of the salary and bonus data revealed one highly unusual outlier. Upon inspecting the corresponding dataset entry it was found to be named TOTAL and consisted of summed amounts of each feature for all employees. This entry was omitted from the final dataset.
+
+---
+
+>Question 2:   
+>What features did you end up using in your POI identifier...    
+
+  The features I chose to include in my POI identifier were these:
+'poi', 'salary', 'deferral_payments', 'total_payments', 'bonus', 'restricted_stock_deferred’, ’deferred_income', 'total_stock_value', 'expenses', 'exercised_stock_options', 'long_term_incentive', 'restricted_stock', 'director_fees', 'proportion_from_poi', 'proportion_to_poi’.   
+
+I left in as many relevant features as possible as I wanted to use an automated selection process during optimisation of the algorithm parameters. I left out ‘loan_advances’ as it is mainly ‘NaN’ values. I chose to scale the features from 0 to 1 for each employee. I found this method translated the variance more consistently across features.    
+
+To compliment the existing features I created two new features from the existing email data named 'proportion_from_poi' and  'proportion_to_poi’. ‘proportion_from_poi’ explains the amount of emails received from a POI expressed as a proportion of all received emails per employee. ‘proportion_to_poi explains the amount of emails sent to a POI expressed as a proportion of all emails sent per employee.   
+
+My algorithm uses GridSearchCV with a Decision Tree Classifier and returns total_payments: 0.785 and restricted_stock_deferred: 0.215 as the most important features. My GridSearchCV also implements SelectKBest and ranks the top 5 features accordingly, proportion_to_poi: 14.35, salary: 7.27, deferred_income: 6.05, proportion_from_poi: 3.36, expenses: 3.33. The algorithm used k values of 3, 4 and 5 while finding the best estimator. There was no notable benefit from adding more features.    
+
+---
+
+>Question 3:   
+>What algorithm did you end up using?...   
+
+  I chose DecisionTreeClassifier for the final project. During the initial stages I experimented with adaBoost but got better performance with DecisionTree. adaBoost took a long time to run and the optimised best estimator was producing results that fell short of the required target of 0.3.
+
+---
+
+>Question 4:   
+>What does it mean to tune the parameters of an algorithm...   
+
+  Tuning parameters of an algorithm is done by changing the default parameter values with the aim of improving precision and recall. If the parameters are not tuned well, the classifier will not reliably identify targets within the test features. I experimented with various combinations but my most recent settings made changes to random_state which is encouraged to have a value of 42 for this project, criterion which has posssible values of gini and entropy, class_weight which has possible values of balanced and None, and max_depth which has possible values of 2, 3 and 4.    
+
+---
+
+>Question 5:   
+>What is validation...   
+
+  After the model has been trained using the training data, it is then fine tuned using validation data. The choice of cross validation will depending on the size of the dataset. The efficacy of the cross validation process is measured by the model’s performance on the test data. If done wrong, you will end up with a model that is too finely tuned to the training data (overfitting) or a model that is too indecisive (under-fitting).    
+
+I chose StratifiedShufleSplit seeing as the Enron dataset is small. The process uses KFolds which validates equally sized and proportioned samples from the training data on the rest of the training data. It then repeats the process until all samples of equal size and proportion have been validated and uses an average of the results to fit the model.   
+
+---
+
+>Question 6:   
+>Give at least 2 evaluation metrics...   
+
+  Precision Score: 0.84   
+  Recall Score: 0.55    
+
+Precision is the fraction of POIs that my model detected in the test group which are **actually** POIs.    
+Recall is the fraction of **actual** POIs which were successfully identified in the test group.
+
+---
+
+I hereby confirm that this submission is my work. I have cited above the origins of any parts of the submission that were taken from Websites, books, forums, blog posts, github repositories, etc.
