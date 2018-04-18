@@ -9,6 +9,7 @@ import numpy as np
 from feature_format import featureFormat, targetFeatureSplit
 from tester import dump_classifier_and_data
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.decomposition import PCA
 from sklearn.feature_selection import SelectKBest
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.grid_search import GridSearchCV
@@ -24,9 +25,10 @@ from sklearn.metrics import recall_score
 with open("final_project_dataset.pkl", "r") as data_file:
     data_dict = pickle.load(data_file)
 
-
 ### Remove outliers
 data_dict.pop("TOTAL", 0)
+data_dict.pop("TRAVEL AGENCY IN THE PARK", 0)
+data_dict.pop("LOCKHART EUGENE E", 0)
 
 ### Create new feature(s)
 ### return number of poi messages to/from as proportion of all messages to/from
@@ -83,13 +85,15 @@ features_train, features_test, labels_train, labels_test = \
 
 pipe = Pipeline([
                 ('scaling', MinMaxScaler()),
+                #('pca', PCA()),
                 ('skb', SelectKBest()),
                 ('tree', DecisionTreeClassifier(random_state = 42))
                 ])
 
 
 parameters = {
-    'skb__k': [3, 4, 5],
+    'skb__k': [2, 3, 4, 5],
+    #'pca__n_components': [2, 3, 4, 5],
     'tree__criterion': ['gini', 'entropy'],
     'tree__max_depth': [2, 3, 4],
     'tree__class_weight': ['balanced', None]
